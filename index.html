@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PyData-Flow Pro — A free, multi-page interactive study centre to master Python for Data Science. 200 lessons, 42 modules, 8 pages, zero installation.">
+    <meta name="author" content="Adewale Samson Adeagbo">
+    <meta name="theme-color" content="#312e81">
+    <title>PyData-Flow Pro | Python for Data Science — Adewale Samson Adeagbo</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-sans">
+<!-- LOADING SCREEN -->
+<div id="loader">
+    <div class="ld-logo">PyData<span>-Flow Pro</span></div>
+    <div class="ld-by">by Adewale Samson Adeagbo — Lagos, Nigeria</div>
+    <div class="ld-track"><div class="ld-bar" id="lbar"></div></div>
+    <div class="ld-msg" id="lmsg">Loading Python runtime…</div>
+    <div class="ld-err" id="ld-err"></div>
+</div>
+
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<div id="sidebar-overlay" style="display:none;" class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- HEADER -->
+<header class="app-header text-white p-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="nav-brand" onclick="navigateTo('home')">
+            <div class="nav-logo">Py</div>
+            <span class="nav-wm">PyData<em>-Flow Pro</em></span>
+            <div class="py-status"><div class="sdot loading" id="engine-status"></div><span id="stext">Loading…</span></div>
+        </div>
+        <nav class="desktop-nav flex items-center gap-0.5" style="display:flex;">
+            <button class="nav-link active" data-page="home" onclick="navigateTo('home')">🏠 Home</button>
+            <button class="nav-link" data-page="curriculum" onclick="navigateTo('curriculum')">📚 Curriculum</button>
+            <button class="nav-link" data-page="lab" onclick="navigateTo('lab')">💻 Lab</button>
+            <button class="nav-link" data-page="sandbox" onclick="navigateTo('sandbox')">🧪 Sandbox</button>
+            <button class="nav-link" data-page="challenges" onclick="navigateTo('challenges')">🏋️ Challenges</button>
+            <button class="nav-link" data-page="cheatsheet" onclick="navigateTo('cheatsheet')">📋 Cheatsheet</button>
+            <button class="nav-link" data-page="glossary" onclick="navigateTo('glossary')">📖 Glossary</button>
+            <button class="nav-link" data-page="resources" onclick="navigateTo('resources')">🗺️ Resources</button>
+            <button class="nav-link" data-page="about" onclick="navigateTo('about')">👤 About</button>
+            <span style="width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 2px;"></span>
+            <div class="xp-pill" id="xp-pill">⭐ 0 XP</div>
+            <span class="hidden sm:flex items-center gap-1" title="Session"><span style="font-size:.6rem;opacity:.4;">⏱</span><span id="session-timer" class="timer-display">00:00</span></span>
+            <button id="theme-toggle-btn" onclick="toggleTheme()" class="nav-link" title="Theme">🌙</button>
+            <button onclick="showShortcutsModal()" class="nav-link" title="Shortcuts (Ctrl+/)">⌨️</button>
+            <button onclick="openMentor()" class="nav-link" title="Mentor">🎓</button>
+        </nav>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </div>
+    <div id="mobile-nav" class="mobile-nav">
+        <button class="nav-link" data-page="home" onclick="navigateTo('home')">🏠 Home</button>
+        <button class="nav-link" data-page="curriculum" onclick="navigateTo('curriculum')">📚 Curriculum</button>
+        <button class="nav-link" data-page="lab" onclick="navigateTo('lab')">💻 Lab</button>
+        <button class="nav-link" data-page="sandbox" onclick="navigateTo('sandbox')">🧪 Sandbox</button>
+        <button class="nav-link" data-page="challenges" onclick="navigateTo('challenges')">🏋️ Challenges</button>
+        <button class="nav-link" data-page="cheatsheet" onclick="navigateTo('cheatsheet')">📋 Cheatsheet</button>
+        <button class="nav-link" data-page="glossary" onclick="navigateTo('glossary')">📖 Glossary</button>
+        <button class="nav-link" data-page="resources" onclick="navigateTo('resources')">🗺️ Resources</button>
+        <button class="nav-link" data-page="about" onclick="navigateTo('about')">👤 About</button>
+        <button class="nav-link" onclick="openMentor()">🎓 Mentor</button>
+        <button class="nav-link" onclick="toggleTheme()">🌓 Theme</button>
+    </div>
+</header>
+
+<!-- ═══ HOME ═══ -->
+<div id="page-home" class="page" style="display:block;">
+    <section class="hero">
+        <div style="position:relative;z-index:1;">
+            <div class="hero-badge">🐍 100% Free · No Signup · Real Python in Your Browser</div>
+            <h1>Learn <span class="g">Python</span><br>for <span class="b">Data Science</span></h1>
+            <p>A free, interactive study centre — <b>200 lessons</b>, <b>42 modules</b>, coding challenges, sandbox, live Python lab. Zero installation.</p>
+            <button class="hero-btn" onclick="navigateTo('lab')">Start Learning Now →</button>
+            <div class="hero-stats">
+                <div class="hero-stat"><div class="hero-stat-num" id="home-stat-lessons">200</div><div class="hero-stat-label">Lessons</div></div>
+                <div class="hero-stat"><div class="hero-stat-num" id="home-stat-modules">42</div><div class="hero-stat-label">Modules</div></div>
+                <div class="hero-stat"><div class="hero-stat-num" id="home-stat-completed">0</div><div class="hero-stat-label">Done</div></div>
+                <div class="hero-stat"><div class="hero-stat-num" id="home-stat-pct">0%</div><div class="hero-stat-label">Progress</div></div>
+                <div class="hero-stat"><div class="hero-stat-num" id="home-stat-xp">0</div><div class="hero-stat-label">XP Earned</div></div>
+                <div class="hero-stat"><div class="hero-stat-num" id="home-stat-streak">0</div><div class="hero-stat-label">Day Streak</div></div>
+            </div>
+        </div>
+    </section>
+    <div class="page-container" style="padding-bottom:0;">
+        <!-- Progress Ring + Continue -->
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:16px;">
+            <div class="progress-ring-wrap" style="position:relative;width:120px;height:120px;flex-shrink:0;">
+                <svg class="progress-ring" width="120" height="120"><circle cx="60" cy="60" r="54" stroke="var(--ring-bg)" stroke-width="10" fill="none"/><circle id="progress-ring-circle" cx="60" cy="60" r="54" stroke="#6366f1" stroke-width="10" fill="none" stroke-linecap="round" style="stroke-dasharray:339.29;stroke-dashoffset:339.29;"/></svg>
+                <div id="ring-pct" class="ring-text" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">0%</div>
+            </div>
+            <div style="flex:1;min-width:220px;">
+                <div id="continue-banner" class="continue-banner" style="display:none;margin:0;"></div>
+                <div id="xp-section"></div>
+            </div>
+        </div>
+        <div id="streak-display"></div>
+        <div id="daily-goal-display"></div>
+        <!-- Builder Banner -->
+        <div class="bb">
+            <div class="bb-av">AS</div>
+            <div style="flex:1;min-width:200px;">
+                <div class="bb-name">Adewale Samson Adeagbo</div>
+                <div class="bb-role">Data Scientist · AI-Augmented Solutions Developer · EdTech Builder · Virtual STEM Tutor · Lagos, Nigeria 🇳🇬</div>
+                <div class="bb-links">
+                    <a class="bb-link" href="https://linkedin.com/in/adewalesamsonadeagbo" target="_blank" rel="noopener">💼 LinkedIn</a>
+                    <a class="bb-link" href="https://github.com/cssadewale" target="_blank" rel="noopener">🐙 GitHub</a>
+                    <a class="bb-link" href="https://cssadewale.pages.dev" target="_blank" rel="noopener">🌐 Portfolio</a>
+                    <a class="bb-link" href="https://hmgconcepts.business.site" target="_blank" rel="noopener">🏫 HMG Academy</a>
+                    <a class="bb-link" href="tel:+2348100866322">📞 +234 810 086 6322</a>
+                </div>
+            </div>
+        </div>
+        <!-- Activity Heatmap -->
+        <div class="heatmap-wrap">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:.73rem;font-weight:700;color:var(--tx2);">📅 Activity (90 days)</span>
+                <span style="font-size:.65rem;color:var(--tx3);">Less <span style="display:inline-flex;gap:2px;vertical-align:middle;"><span class="heat-cell" style="width:10px;height:10px;display:inline-block;"></span><span class="heat-cell l1" style="width:10px;height:10px;display:inline-block;"></span><span class="heat-cell l2" style="width:10px;height:10px;display:inline-block;"></span><span class="heat-cell l3" style="width:10px;height:10px;display:inline-block;"></span><span class="heat-cell l4" style="width:10px;height:10px;display:inline-block;"></span></span> More</span>
+            </div>
+            <div id="heatmap" class="heatmap-grid"></div>
+        </div>
+        <!-- Lesson of the Day -->
+        <div id="lotd" class="lotd"></div>
+    </div>
+    <div class="page-container" style="padding-top:0;padding-bottom:0;">
+        <h3 style="font-size:.8rem;font-weight:700;color:var(--tx2);margin-bottom:6px;">🏅 Achievements (12)</h3>
+        <div id="home-achievements" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;"></div>
+    </div>
+    <section class="section-alt" style="padding:40px 20px;">
+        <div class="max-w-6xl mx-auto">
+            <h2 style="text-align:center;font-size:1.4rem;font-weight:800;margin-bottom:6px;">Why PyData-Flow Pro?</h2>
+            <p style="text-align:center;color:var(--tx2);margin-bottom:24px;font-size:.9rem;">Everything a beginner data scientist needs.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+                <div class="card feature-card"><div class="feature-icon">🐍</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Browser Python</h3><p style="font-size:.74rem;color:var(--tx2);">No installation needed.</p></div>
+                <div class="card feature-card"><div class="feature-icon">📊</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Real Datasets</h3><p style="font-size:.74rem;color:var(--tx2);">3 built-in + CSV upload.</p></div>
+                <div class="card feature-card"><div class="feature-icon">🧪</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Sandbox</h3><p style="font-size:.74rem;color:var(--tx2);">Free coding playground.</p></div>
+                <div class="card feature-card"><div class="feature-icon">🏋️</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Challenges</h3><p style="font-size:.74rem;color:var(--tx2);">8 coding challenges.</p></div>
+                <div class="card feature-card"><div class="feature-icon">⚡</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">XP System</h3><p style="font-size:.74rem;color:var(--tx2);">Earn XP, level up.</p></div>
+                <div class="card feature-card"><div class="feature-icon">🔥</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Streaks</h3><p style="font-size:.74rem;color:var(--tx2);">Daily study tracking.</p></div>
+                <div class="card feature-card"><div class="feature-icon">💡</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Error Hints</h3><p style="font-size:.74rem;color:var(--tx2);">Smart error explanations.</p></div>
+                <div class="card feature-card"><div class="feature-icon">🏆</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Certificate</h3><p style="font-size:.74rem;color:var(--tx2);">5-level certification.</p></div>
+                <div class="card feature-card"><div class="feature-icon">🖨️</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Print Lessons</h3><p style="font-size:.74rem;color:var(--tx2);">Print any lesson for offline study.</p></div>
+                <div class="card feature-card"><div class="feature-icon">📅</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Activity Map</h3><p style="font-size:.74rem;color:var(--tx2);">90-day study heatmap.</p></div>
+                <div class="card feature-card"><div class="feature-icon">🎯</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Daily Goal</h3><p style="font-size:.74rem;color:var(--tx2);">Lesson of the day picks.</p></div>
+                <div class="card feature-card"><div class="feature-icon">📝</div><h3 style="font-weight:700;margin-bottom:3px;font-size:.88rem;">Smart Notes</h3><p style="font-size:.74rem;color:var(--tx2);">Per-lesson auto-saved notes.</p></div>
+            </div>
+        </div>
+    </section>
+    <section style="padding:40px 20px;">
+        <div class="max-w-6xl mx-auto">
+            <h2 style="text-align:center;font-size:1.4rem;font-weight:800;margin-bottom:24px;">Learning Modules</h2>
+            <div id="home-modules" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;"></div>
+        </div>
+    </section>
+</div>
+
+<!-- ═══ CURRICULUM ═══ -->
+<div id="page-curriculum" class="page" style="display:none;">
+    <div class="page-container">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+            <div><h1 class="page-title">📚 Full Curriculum</h1><p class="page-subtitle" style="margin-bottom:0;">200 lessons · 42 modules · 5-level certification — from absolute beginner to expert</p></div>
+            <input id="curriculum-search" type="text" class="search-input" placeholder="🔍 Search..." oninput="renderCurriculumPage()" style="max-width:260px;">
+        </div>
+        <div id="curriculum-modules"></div>
+    </div>
+</div>
+
+<!-- ═══ LAB ═══ -->
+<div id="page-lab" class="page" style="display:none;">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside id="lab-sidebar" class="sidebar sidebar-mobile-hidden w-full md:w-60 border-r p-3 flex flex-col overflow-y-auto" style="max-height:calc(100vh - 52px);position:sticky;top:52px;" role="navigation">
+            <div class="mb-3">
+                <div class="progress-track"><div id="lab-progress-bar" class="progress-fill" style="width:0%"></div></div>
+                <p id="lab-progress-text" class="text-right mt-1" style="font-size:9px;color:var(--tx2);">0%</p>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div class="stat-card"><div id="lab-stat-completed" class="stat-number" style="font-size:1.1rem;">0</div><div class="stat-label">Done</div></div>
+                    <div class="stat-card"><div id="lab-stat-remaining" class="stat-number" style="font-size:1.1rem;">200</div><div class="stat-label">Left</div></div>
+                </div>
+            </div>
+            <div id="pomodoro-wrap" class="pomodoro mb-2">
+                <span style="font-size:.65rem;color:var(--tx2);font-weight:600;">🍅</span>
+                <span id="pomodoro-time" class="pomodoro-time">25:00</span>
+                <button id="pomodoro-toggle" class="pomodoro-btn" onclick="togglePomodoro()">▶</button>
+                <button class="pomodoro-btn" onclick="resetPomodoro()" title="Reset">↺</button>
+            </div>
+            <input id="lab-lesson-search" type="text" class="search-input" placeholder="🔍 Search..." oninput="renderLabSidebar()" style="margin-bottom:6px;font-size:.75rem;">
+            <nav id="lab-curriculum-nav" class="flex-1 overflow-y-auto space-y-0.5" role="menu"></nav>
+            <div class="mt-2 space-y-1" style="font-size:.7rem;">
+                <button onclick="exportProgress()" class="btn-ghost w-full text-left">📥 Export</button>
+                <button onclick="exportAllNotes()" class="btn-ghost w-full text-left">📄 Export Notes</button>
+                <label class="btn-ghost w-full text-left block cursor-pointer">📤 Import<input type="file" accept=".json" onchange="importProgress(event)" style="display:none;"></label>
+                <button onclick="resetAllProgress()" class="btn-ghost w-full text-left" style="color:#ef4444;">🗑️ Reset</button>
+            </div>
+            <div class="mt-2 p-2 rounded-lg border phi-box"><p class="phi-title" style="font-size:.7rem;font-weight:700;">Philosophy</p><p class="phi-quote" style="font-size:9px;line-height:1.3;">"Clear thinking + AI leverage = Competence."</p></div>
+        </aside>
+        <main class="flex-1 p-4 md:p-5 overflow-hidden">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <!-- LEFT -->
+                <div class="flex flex-col gap-3">
+                    <div id="lesson-breadcrumb" class="breadcrumb"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span id="lesson-time-est" class="lesson-time"></span>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div id="lesson-rating" class="star-rating"></div>
+                            <button id="bookmark-btn" class="bookmark-btn" title="Bookmark">☆</button>
+                        </div>
+                    </div>
+                    <div id="lesson-content" class="lesson-card p-5 rounded-2xl shadow-sm border min-h-[260px]" role="article"></div>
+                    <div id="tutor-tip" class="tip-box p-3 rounded-xl italic text-sm" role="complementary"></div>
+                    <div id="quiz-section" class="quiz-card p-4 rounded-2xl border-2 shadow-sm" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <h3 class="font-bold" style="color:var(--hl-tx);font-size:.9rem;">Knowledge Checkpoint 🧠</h3>
+                            <button id="quiz-retry" class="btn-ghost" style="display:none;font-size:.7rem;color:var(--hl-tx);" onclick="retryQuiz()">🔄 Retry</button>
+                        </div>
+                        <p id="quiz-question" class="text-sm mb-3" style="color:var(--tx2);"></p>
+                        <div id="quiz-options" class="grid grid-cols-1 gap-2"></div>
+                    </div>
+                    <!-- Notes -->
+                    <div class="card p-3 rounded-2xl border shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 style="font-size:.7rem;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;">📝 Notes</h3>
+                            <button onclick="saveNotes()" class="btn-ghost" style="font-size:.7rem;color:var(--hl-tx);">Save</button>
+                        </div>
+                        <textarea id="lesson-notes" class="notes-area" placeholder="Your notes..." oninput="autoSaveNotes()" rows="2"></textarea>
+                    </div>
+                    <!-- Comments -->
+                    <div id="comments-section" class="card p-3 rounded-2xl border shadow-sm"></div>
+                    <button id="complete-btn" class="complete-btn">✅ Mark as Completed</button>
+                    <div class="flex gap-3">
+                        <button id="prev-lesson-btn" onclick="goToPrevLesson()" class="nav-arrow flex-1 text-left">← <span class="nav-label text-xs" style="opacity:.7;">Prev</span></button>
+                        <button id="next-lesson-btn" onclick="goToNextLesson()" class="nav-arrow flex-1 text-right"><span class="nav-label text-xs" style="opacity:.7;">Next</span> →</button>
+                    </div>
+                </div>
+                <!-- RIGHT -->
+                <div class="flex flex-col gap-3">
+                    <div class="card p-3 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <label style="font-size:.7rem;font-weight:700;color:var(--tx2);text-transform:uppercase;">Dataset Hub</label>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <select id="dataset-select" onchange="loadDataset()" class="text-xs p-1.5 border rounded outline-none" style="background:var(--inp);color:var(--tx);border-color:var(--brd);">
+                                <option value="none">No Dataset</option><option value="education">🇳🇬 Education</option><option value="sales">💰 Sales</option><option value="weather">🌤 Weather</option>
+                            </select>
+                            <label style="font-size:.7rem;padding:3px 8px;border:1px solid var(--brd);border-radius:6px;cursor:pointer;color:var(--hl-tx);">📁 Upload<input type="file" accept=".csv" onchange="handleCustomCSV(event)" style="display:none;"></label>
+                            <button onclick="toggleDataPreview()" style="font-size:.7rem;padding:3px 8px;border:1px solid var(--brd);border-radius:6px;color:var(--tx2);">👁</button>
+                        </div>
+                    </div>
+                    <div id="data-preview" class="data-preview"></div>
+                    <div id="editor-wrap">
+                        <div class="rounded-t-2xl p-2.5 flex justify-between items-center" style="background:#1e293b;">
+                            <div class="flex items-center gap-2">
+                                <span style="font-size:.65rem;font-family:monospace;letter-spacing:.1em;color:#94a3b8;">PYTHON 3.11</span>
+                                <div class="font-size-controls"><button onclick="changeFontSize(-1)">A-</button><span id="font-size-display" style="font-size:.6rem;color:#64748b;">14px</span><button onclick="changeFontSize(1)">A+</button></div>
+                            </div>
+                            <div class="flex gap-1 items-center">
+                                <button onclick="resetCode()" class="p-1 hover:bg-slate-700 rounded text-sm" title="Reset">🔄</button>
+                                <button onclick="copyCode()" class="p-1 hover:bg-slate-700 rounded text-sm" title="Copy">📋</button>
+                                <button onclick="downloadCode()" class="p-1 hover:bg-slate-700 rounded text-sm" title="Download">💾</button>
+                                <button onclick="printLesson()" class="p-1 hover:bg-slate-700 rounded text-sm" title="Print lesson">🖨️</button>
+                                <button onclick="clearOutput()" class="p-1 hover:bg-slate-700 rounded text-sm" title="Clear">🧹</button>
+                                <button id="fs-btn" onclick="toggleFullscreen()" class="p-1 hover:bg-slate-700 rounded text-sm" title="Fullscreen">⛶</button>
+                                <button onclick="runCode()" id="run-btn" class="run-btn">Run ▶</button>
+                            </div>
+                        </div>
+                        <div class="code-editor-wrap"><div id="line-numbers" class="line-numbers"></div><textarea id="code-editor" class="code-editor-area with-lines h-52 p-4 text-sm rounded-b-sm" spellcheck="false" placeholder="# Write Python here..."></textarea></div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <button class="tab-btn active" data-tab="output" onclick="switchTab('output')">📤 Output</button>
+                        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📜 History</button>
+                        <button class="tab-btn" data-tab="snippets" onclick="switchTab('snippets')">📎 Snippets</button>
+                    </div>
+                    <div id="tab-output"><div class="output-panel border rounded-xl p-3 h-36 overflow-y-auto font-mono text-sm" id="output"><span style="color:var(--tx2);font-style:italic;">Initializing...</span></div></div>
+                    <div id="tab-history" style="display:none;"><div class="output-panel border rounded-xl p-3 h-36 overflow-y-auto space-y-1.5" id="history-list"></div></div>
+                    <div id="tab-snippets" style="display:none;"><div class="output-panel border rounded-xl p-3 h-36 overflow-y-auto space-y-1.5" id="snippet-list"></div></div>
+                    <div class="plot-canvas border rounded-xl p-2 min-h-[260px] flex items-center justify-center overflow-hidden shadow-inner" id="plot-canvas"><span style="color:var(--tx2);font-size:.73rem;font-style:italic;">Visualizations here...</span></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <button class="sidebar-toggle" onclick="toggleMobileSidebar()">📚</button>
+</div>
+
+<!-- ═══ SANDBOX ═══ -->
+<div id="page-sandbox" class="page" style="display:none;">
+    <div class="page-container">
+        <h1 class="page-title">🧪 Python Sandbox</h1>
+        <p class="page-subtitle">Free coding playground — not tied to any lesson. Experiment freely!</p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div>
+                <div class="rounded-t-2xl p-2.5 flex justify-between items-center" style="background:#1e293b;">
+                    <span style="font-size:.65rem;font-family:monospace;color:#94a3b8;">SANDBOX</span>
+                    <button onclick="runSandbox()" class="run-btn">Run ▶</button>
+                </div>
+                <div class="code-editor-wrap"><div id="sandbox-line-numbers" class="line-numbers"></div><textarea id="sandbox-editor" class="code-editor-area with-lines p-4 text-sm rounded-b-sm" style="height:400px;" spellcheck="false" oninput="updateSandboxLines()" placeholder="# Experiment here..."></textarea></div>
+            </div>
+            <div class="flex flex-col gap-3">
+                <div class="output-panel border rounded-xl p-4 overflow-y-auto font-mono text-sm" id="sandbox-output" style="min-height:200px;"><span style="color:var(--tx2);font-style:italic;">Output will appear here...</span></div>
+                <div class="plot-canvas border rounded-xl p-2 min-h-[200px] flex items-center justify-center overflow-hidden shadow-inner" id="sandbox-canvas"><span style="color:var(--tx2);font-size:.73rem;font-style:italic;">Charts here...</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ CHALLENGES ═══ -->
+<div id="page-challenges" class="page" style="display:none;">
+    <div class="page-container">
+        <h1 class="page-title">🏋️ Challenges</h1>
+        <p class="page-subtitle">Test your skills. Click any challenge to load it in the Lab. (+30 XP each)</p>
+        <div id="challenges-list"></div>
+    </div>
+</div>
+
+<!-- ═══ CHEATSHEET ═══ -->
+<div id="page-cheatsheet" class="page" style="display:none;">
+    <div class="page-container">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+            <div><h1 class="page-title">📋 Cheatsheet</h1><p class="page-subtitle" style="margin-bottom:0;">Quick reference for Python & Data Science</p></div>
+            <input id="cheatsheet-search" type="text" class="search-input" placeholder="🔍 Search..." oninput="renderCheatsheetPage()" style="max-width:260px;">
+        </div>
+        <div id="cheatsheet-content" class="card" style="padding:20px;"></div>
+    </div>
+</div>
+
+<!-- ═══ GLOSSARY ═══ -->
+<div id="page-glossary" class="page" style="display:none;">
+    <div class="page-container">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+            <div><h1 class="page-title">📖 Glossary</h1><p class="page-subtitle" style="margin-bottom:0;">Key data science terms</p></div>
+            <input id="glossary-search" type="text" class="search-input" placeholder="🔍 Search..." oninput="glossaryFilter='';renderGlossaryPage()" style="max-width:260px;">
+        </div>
+        <div id="alpha-nav" class="alpha-nav"></div>
+        <div id="glossary-content" class="card"></div>
+    </div>
+</div>
+
+<!-- ═══ RESOURCES ═══ -->
+<div id="page-resources" class="page" style="display:none;">
+    <div class="page-container">
+        <h1 class="page-title">🗺️ Resources & Roadmap</h1>
+        <p class="page-subtitle">Your guide to becoming a data scientist</p>
+        <div class="resources-grid">
+            <div>
+                <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">📍 Roadmap</h2>
+                <div id="roadmap-content" class="card" style="padding:20px;"></div>
+            </div>
+            <div>
+                <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">❓ FAQ</h2>
+                <div id="faq-content" class="card" style="padding:4px 18px;"></div>
+                <h2 style="font-size:1.2rem;font-weight:700;margin:24px 0 12px;">🔗 Free Resources</h2>
+                <div class="card">
+                    <div class="resource-item" onclick="window.open('https://docs.python.org/3/tutorial/','_blank')"><div class="resource-icon">📘</div><div><h4 style="font-weight:700;font-size:.85rem;">Python Tutorial</h4><p style="font-size:.75rem;color:var(--tx2);">Official docs</p></div></div>
+                    <div class="resource-item" onclick="window.open('https://pandas.pydata.org/docs/getting_started/intro_tutorials/','_blank')"><div class="resource-icon">🐼</div><div><h4 style="font-weight:700;font-size:.85rem;">Pandas Tutorials</h4><p style="font-size:.75rem;color:var(--tx2);">Beginner guides</p></div></div>
+                    <div class="resource-item" onclick="window.open('https://matplotlib.org/stable/tutorials/','_blank')"><div class="resource-icon">📊</div><div><h4 style="font-weight:700;font-size:.85rem;">Matplotlib</h4><p style="font-size:.75rem;color:var(--tx2);">Chart guide</p></div></div>
+                    <div class="resource-item" onclick="window.open('https://kaggle.com/learn','_blank')"><div class="resource-icon">🏫</div><div><h4 style="font-weight:700;font-size:.85rem;">Kaggle Learn</h4><p style="font-size:.75rem;color:var(--tx2);">Free courses</p></div></div>
+                    <div class="resource-item" onclick="window.open('https://github.com/cssadewale','_blank')"><div class="resource-icon">💻</div><div><h4 style="font-weight:700;font-size:.85rem;">Mentor's GitHub</h4><p style="font-size:.75rem;color:var(--tx2);">Code samples</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALS -->
+<div id="mentor-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <button onclick="closeMentor()" style="position:absolute;top:14px;right:14px;font-size:1.3rem;background:none;border:none;cursor:pointer;color:var(--tx2);">&times;</button>
+        <div class="text-center">
+            <div style="width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;background:var(--phi);">👨‍🏫</div>
+            <h2 class="text-2xl font-bold" style="color:var(--hl-tx);">Adewale Samson Adeagbo</h2>
+            <p style="color:var(--phi-sub);font-weight:500;margin-bottom:12px;font-size:.9rem;">Data Scientist | EdTech Builder</p>
+            <div class="flex justify-center gap-2 mb-5 flex-wrap">
+                <a href="https://linkedin.com/in/adewalesamsonadeagbo" target="_blank" rel="noopener" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs">LinkedIn</a>
+                <a href="https://github.com/cssadewale" target="_blank" rel="noopener" class="bg-slate-800 text-white px-3 py-1 rounded-full text-xs">GitHub</a>
+                <a href="https://cssadewale.pages.dev" target="_blank" rel="noopener" class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs">Portfolio</a>
+            </div>
+            <div class="text-left space-y-3 text-sm" style="color:var(--tx2);">
+                <p>15+ years in Nigerian classrooms. Teaches <b style="color:var(--tx);">clarity of thought</b>, not just code.</p>
+                <p>Founder of <b style="color:var(--tx);">HMG Academy</b>, creator of <b style="color:var(--tx);">CBT Pro</b>.</p>
+                <p class="font-bold" style="color:var(--hl-tx);">📞 +234 810 086 6322 | +234 809 448 1488</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="certificate-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <button onclick="closeCertificate()" style="position:absolute;top:14px;right:14px;font-size:1.3rem;background:none;border:none;cursor:pointer;color:var(--tx2);">&times;</button>
+        <div class="certificate">
+            <h2 style="font-size:1.8rem;font-weight:800;color:var(--hl-tx);">🏆 Congratulations!</h2>
+            <p style="color:var(--tx2);margin-bottom:20px;">You've completed all 200 lessons!</p>
+            <div style="margin-bottom:16px;"><input id="cert-name-input" type="text" placeholder="Your full name" class="search-input" style="text-align:center;font-size:1rem;padding:10px;"></div>
+            <button onclick="downloadCertificate()" class="btn-success" style="padding:10px 36px;font-size:.95rem;">📜 Download Certificate</button>
+        </div>
+    </div>
+</div>
+
+<div id="shortcuts-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width:440px;">
+        <button onclick="closeShortcuts()" style="position:absolute;top:14px;right:14px;font-size:1.3rem;background:none;border:none;cursor:pointer;color:var(--tx2);">&times;</button>
+        <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:16px;">⌨️ Keyboard Shortcuts</h2>
+        <div class="shortcut-row"><span>Run Code</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Enter</kbd></span></div>
+        <div class="shortcut-row"><span>Save Notes</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd></span></div>
+        <div class="shortcut-row"><span>Show Shortcuts</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">/</kbd></span></div>
+        <div class="shortcut-row"><span>Close Modal / Fullscreen</span><span><kbd class="kbd">Esc</kbd></span></div>
+        <div class="shortcut-row"><span>Insert Tab (in editor)</span><span><kbd class="kbd">Tab</kbd></span></div>
+    </div>
+</div>
+
+
+<!-- ═══ ABOUT PAGE (merged from PyLearnDS) ═══ -->
+<div id="page-about" class="page" style="display:none;">
+    <div class="page-container" style="max-width:860px;">
+        <p class="eyebrow">Builder Profile</p>
+        <h1 class="stitle">About the Builder</h1>
+        <div class="about-card">
+            <div class="about-av">AS</div>
+            <div class="about-name">Adewale Samson Adeagbo</div>
+            <div class="about-role">Data Scientist · Machine Learning Engineer · AI-Augmented Solutions Developer<br>EdTech Builder · Virtual STEM Tutor · FaithTech Builder · Educator — 15+ Years<br>Lagos, Nigeria 🇳🇬</div>
+            <div class="about-bio">
+                I am a Data Scientist, Machine Learning Engineer, and AI-Augmented Solution Developer based in <strong>Lagos, Nigeria</strong> — with over 15 years of classroom teaching experience spanning Mathematics, Further Mathematics, Physics, Chemistry, and Computer Science across Lagos and Ogun States.<br><br>
+                I hold a <strong>B.Sc.(Ed) in Computer Science Education from Lagos State University (2023)</strong> — a degree I pursued years after secondary school because of one unwavering desire: <em>to use technology to solve real classroom and school problems.</em><br><br>
+                In 2015, I founded <strong>HMG Concepts</strong> (His Marvellous Grace Educational Consult), where I serve as Visioner, Director, and Data Lead. Its virtual arm, <strong>HMG Academy</strong>, delivers instruction across all subjects through a team of seasoned educators.<br><br>
+                My technical capability fully unlocked after joining the <strong>3MTT Data Science Programme in 2025</strong>. I am currently enrolled in three programmes simultaneously: DSN × 3MTT × Google.org DeepTech_Ready (DSML Track, Cohort 3), DSN × Microsoft Elevate AI Developers (AI-900, Cohort 1), and SkillBuild Hub Ambassador Cohort 4.<br><br>
+                My identity as both practitioner and educator is my core differentiator — I do not just build data solutions, I teach others how to build them too. <em>PyData-Flow Pro is living proof of that.</em>
+            </div>
+            <div class="about-links">
+                <a class="alink" href="https://linkedin.com/in/adewalesamsonadeagbo" target="_blank" rel="noopener">💼 LinkedIn</a>
+                <a class="alink" href="https://github.com/cssadewale" target="_blank" rel="noopener">🐙 GitHub</a>
+                <a class="alink" href="https://cssadewale.pages.dev" target="_blank" rel="noopener">🌐 Portfolio</a>
+                <a class="alink" href="https://hmgconcepts.business.site" target="_blank" rel="noopener">🏫 HMG Concepts</a>
+                <a class="alink" href="https://youtube.com/@hmgconcepts" target="_blank" rel="noopener">📺 YouTube</a>
+                <a class="alink" href="https://instagram.com/cssadewale" target="_blank" rel="noopener">📷 Instagram</a>
+                <a class="alink" href="https://twitter.com/cssadewale" target="_blank" rel="noopener">🐦 X / Twitter</a>
+                <a class="alink" href="https://facebook.com/hmgconcepts" target="_blank" rel="noopener">👥 Facebook</a>
+            </div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--tx3);margin-bottom:10px;letter-spacing:.1em">CONTACT DETAILS</div>
+            <div class="contact-grid">
+                <div class="contact-item"><span style="font-size:16px">✉️</span><div><div class="ci-label">Primary Email</div><div class="ci-val"><a href="mailto:adeagboadewalesamson@gmail.com">adeagboadewalesamson@gmail.com</a></div></div></div>
+                <div class="contact-item"><span style="font-size:16px">✉️</span><div><div class="ci-label">Alternate Email</div><div class="ci-val"><a href="mailto:buildingmyictcareer@gmail.com">buildingmyictcareer@gmail.com</a></div></div></div>
+                <div class="contact-item"><span style="font-size:16px">📞</span><div><div class="ci-label">Phone (Primary)</div><div class="ci-val"><a href="tel:+2348100866322">+234 810 086 6322</a></div></div></div>
+                <div class="contact-item"><span style="font-size:16px">📞</span><div><div class="ci-label">Phone (Alternate)</div><div class="ci-val"><a href="tel:+2348094481488">+234 809 448 1488</a></div></div></div>
+                <div class="contact-item"><span style="font-size:16px">🌐</span><div><div class="ci-label">Portfolio</div><div class="ci-val"><a href="https://cssadewale.pages.dev" target="_blank">cssadewale.pages.dev</a></div></div></div>
+                <div class="contact-item"><span style="font-size:16px">🏫</span><div><div class="ci-label">HMG Concepts</div><div class="ci-val"><a href="https://hmgconcepts.business.site" target="_blank">hmgconcepts.business.site</a></div></div></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--tx3);margin-bottom:10px;letter-spacing:.1em">TECH STACK</div>
+            <div class="skills-wrap" id="skills-wrap"></div>
+        </div>
+        <div class="about-card">
+            <h3 style="font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:6px">HMG Concepts &amp; HMG Academy</h3>
+            <p style="color:var(--tx2);font-size:13px;margin-bottom:14px">His Marvellous Grace Educational Consult — Founded 2015, Lagos, Nigeria</p>
+            <div class="hmg-card">
+                <p style="font-size:13.5px;color:var(--tx2);line-height:1.75;margin-bottom:10px">HMG Academy delivers structured, high-quality tutoring across all major Nigerian and international examination frameworks through a team of seasoned educators.</p>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--tx3);margin-bottom:8px;letter-spacing:.1em">SUBJECTS AND EXAMINATIONS</div>
+                <div class="hmg-subjects" id="hmg-subjects"></div>
+            </div>
+        </div>
+        <div class="about-card">
+            <h3 style="font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:6px">Active Learning Programmes (2025–2026)</h3>
+            <div class="cert-grid" id="cert-grid"></div>
+        </div>
+        <div class="about-card">
+            <h3 style="font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:6px">12 Deployed Data Science Projects</h3>
+            <p style="color:var(--tx2);font-size:13px;margin-bottom:14px">All projects live, built with Python, Pandas, Scikit-learn, and Streamlit</p>
+            <div class="proj-grid" id="proj-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="app-footer">
+    <div style="max-width:860px;margin:0 auto;">
+        <div class="footer-brand">PyData-Flow Pro</div>
+        <div style="margin-bottom:5px">Built by <a href="https://cssadewale.pages.dev" target="_blank">Adewale Samson Adeagbo</a> · Lagos, Nigeria</div>
+        <div class="footer-links">
+            <a href="https://linkedin.com/in/adewalesamsonadeagbo" target="_blank">LinkedIn</a>
+            <a href="https://github.com/cssadewale" target="_blank">GitHub</a>
+            <a href="https://cssadewale.pages.dev" target="_blank">Portfolio</a>
+            <a href="https://hmgconcepts.business.site" target="_blank">HMG Academy</a>
+            <a href="mailto:adeagboadewalesamson@gmail.com">Email</a>
+            <a href="tel:+2348100866322">+234 810 086 6322</a>
+        </div>
+        <div style="color:var(--tx4);font-size:10px;margin-top:6px">© 2026 HMG Academy Virtual Study Centre · PyData-Flow Pro · MIT Licence · 200 Lessons · 42 Modules · 9 Pages · 100% Free · No API Keys</div>
+    </div>
+</footer>
+
+<script src="curriculum.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
